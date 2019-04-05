@@ -493,7 +493,7 @@ namespace nodetool
     else
     {
       memcpy(&m_network_id, &::config::NETWORK_ID, 16);
-      if (m_exclusive_peers.empty())
+      if (m_exclusive_peers.empty() && !m_offline)
       {
       // for each hostname in the seed nodes list, attempt to DNS resolve and
       // add the result addresses as seed nodes
@@ -1773,7 +1773,7 @@ namespace nodetool
         }
         if (c_id.first <= zone->first)
           break;
-	  
+
         ++zone;
       }
       if (zone->first == c_id.first)
@@ -1903,9 +1903,9 @@ namespace nodetool
     COMMAND_REQUEST_SUPPORT_FLAGS::request support_flags_request;
     bool r = epee::net_utils::async_invoke_remote_command2<typename COMMAND_REQUEST_SUPPORT_FLAGS::response>
     (
-      context.m_connection_id, 
-      COMMAND_REQUEST_SUPPORT_FLAGS::ID, 
-      support_flags_request, 
+      context.m_connection_id,
+      COMMAND_REQUEST_SUPPORT_FLAGS::ID,
+      support_flags_request,
       m_network_zones.at(epee::net_utils::zone::public_).m_net_server.get_config_object(),
       [=](int code, const typename COMMAND_REQUEST_SUPPORT_FLAGS::response& rsp, p2p_connection_context& context_)
       {

@@ -1,25 +1,27 @@
 # Triton
-![Image of Triton](https://cdn.discordapp.com/attachments/402595075949068288/544379818926538763/ProjectTritonwordlogov2.png)
-Freedom for Streamers and Professional Gamers
+![Image of Triton](https://xtri.network/wp-content/uploads/2019/04/TRITON-XTRI-BANNER-SAO-1000x3000-1.png)
 
-Project Triton [XTRI] is developing innovative donation platforms for the Online Streaming and ESports industries through blockchain technology
+
+#### STABLE VALUE
+Triton aims to release the first completely private ‘mint and burn’ stablecoin. Users will be able to burn our volatile coin Triton (XTRI), a fork of Monero, to mint a market equivalent amount of the Sao Dollar (SAO) – one SAO = $1 US. In turn, each SAO can be burned to mint $1 of XTRI.
+
+#### OPEN SOURCE
+This protocol is open source, has involved multiple contributors in the past, and we welcome additional contributors both now and in the future. We do not expect pulling off mint and burn to be easy, and want as many people testing the protocol as possible.
+
+#### DECENTRALIZED
+Triton is developing an oracle feature we call ‘services nodes’ in order to query trading data and help create security for the consensus ‘mint and burn’ market price. The staking amount will begin at 40,000 XTRI and decrease over time to 15,000 XTRI over 10 years.
+
+#### SUMMARY
+Cryptocurrencies are inherently volatile. And while centralized stablecoins like Tether can provide value stability, they require trust of a third party to honor redemption. In contrast to Tether, Triton (XTRI) is an attempt to build the first private and decentralized stablecoin: the Sao Dollar (SAO).
+
+In brief, you will always be able to destroy a market equivalent $1 US dollar value of XTRI to mint a single SAO and vice versa. Triton will rely on decentralized ‘service nodes’ – a multifunctional price-monitoring oracle of our own design for determining the mint and burn exchange rate. In this way, the ability to ‘mint and burn’ both coins according to market data allows our volatile chain XTRI to peg the value of SAO to $1.
+
+
 
 ### For announcements:
 [Website](https://xtri.network)  
 [Twitter](https://twitter.com/TritonNetwork)  
 [Discord](https://discord.gg/7FWufDt)
-
-# Sao
-<p align="center">
-  <img src="https://xtri.network/wp-content/uploads/2019/01/SAOTEXTSMALL-2.png" alt="Sao"/>
-</p>
-A new journey for Project Triton. The SAO stablecoin.
-SAO is a decentralized stablecoin based on mint and burn protocol called the Sao Dollar (SAO), which is minted from our established volatile coin Triton (XTRI).
-
-Check out the announcement [here](https://medium.com/@projecttriton/new-journey-the-sao-stablecoin-da6f9119a410)  
-Check out the paper [here](https://bit.ly/SAOTechinicalPaper)
-
-
 
 # General Information
 Copyright (c) 2014-2018 The Monero Project.   

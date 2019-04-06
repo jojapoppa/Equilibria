@@ -669,8 +669,8 @@
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="3312"/>
-        <source>--restore-deterministic-wallet uses --generate-new-wallet, not --wallet-file</source>
-        <translation>--restore-deterministic-wallet utilise --generate-new-wallet, pas --wallet-file</translation>
+        <source>--restore-from-seed uses --generate-new-wallet, not --wallet-file</source>
+        <translation>--restore-from-seed utilise --generate-new-wallet, pas --wallet-file</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="3341"/>
@@ -2586,8 +2586,8 @@ Sinon, vous prouvez le plus petit solde supérieur à &lt;montant&gt; dans votre
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="3304"/>
-        <source>can&apos;t specify both --restore-deterministic-wallet or --restore-multisig-wallet and --non-deterministic</source>
-        <translation>impossible de spécifier à la fois --restore-deterministic-wallet ou --restore-multisig-wallet et --non-deterministic</translation>
+        <source>can&apos;t specify both --restore-from-seed or --restore-multisig-wallet and --non-deterministic</source>
+        <translation>impossible de spécifier à la fois --restore-from-seed ou --restore-multisig-wallet et --non-deterministic</translation>
     </message>
     <message>
         <location filename="../src/simplewallet/simplewallet.cpp" line="3310"/>
@@ -2676,16 +2676,16 @@ Sinon, vous prouvez le plus petit solde supérieur à &lt;montant&gt; dans votre
 To start synchronizing with the daemon, use the &quot;refresh&quot; command.
 Use the &quot;help&quot; command to see the list of available commands.
 Use &quot;help &lt;command&gt;&quot; to see a command&apos;s documentation.
-Always use the &quot;exit&quot; command when closing monero-wallet-cli to save 
-your current session&apos;s state. Otherwise, you might need to synchronize 
+Always use the &quot;exit&quot; command when closing monero-wallet-cli to save
+your current session&apos;s state. Otherwise, you might need to synchronize
 your wallet again (your wallet keys are NOT at risk in any case).
 </source>
         <translation>Votre portefeuille a été généré !
 Pour commencer la synchronisation avec le démon, utilisez la commande &quot;refresh&quot;.
 Utilisez la commande &quot;help&quot; pour voir la liste des commandes disponibles.
 Utilisez &quot;help &lt;commande&gt;&quot; pour voir la documentation d&apos;une commande.
-Utilisez toujours la commande &quot;exit&quot; pour fermer monero-wallet-cli pour sauvegarder 
-l&apos;état de votre session. Sinon, vous pourriez avoir besoin de synchroniser 
+Utilisez toujours la commande &quot;exit&quot; pour fermer monero-wallet-cli pour sauvegarder
+l&apos;état de votre session. Sinon, vous pourriez avoir besoin de synchroniser
 votre portefeuille à nouveau (mais les clés de votre portefeuille ne risquent rien).
 </translation>
     </message>

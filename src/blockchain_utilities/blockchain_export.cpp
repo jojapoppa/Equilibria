@@ -33,6 +33,7 @@
 #include "cryptonote_core/tx_pool.h"
 #include "cryptonote_core/cryptonote_core.h"
 #include "blockchain_db/blockchain_db.h"
+#include "cryptonote_core/quorum_cop.h"
 #include "blockchain_db/db_types.h"
 #include "version.h"
 
@@ -98,12 +99,12 @@ int main(int argc, char* argv[])
 
 	if (command_line::get_arg(vm, command_line::arg_help))
 	{
-		std::cout << "Triton '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL << ")" << ENDL << ENDL;
+		std::cout << "Equilibria '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL << ")" << ENDL << ENDL;
 		std::cout << desc_options << std::endl;
 		return 1;
 	}
 
-	mlog_configure(mlog_get_default_log_path("triton-blockchain-export.log"), true);
+	mlog_configure(mlog_get_default_log_path("equilibria-blockchain-export.log"), true);
 	if (!command_line::is_arg_defaulted(vm, arg_log_level))
 		mlog_set_log(command_line::get_arg(vm, arg_log_level).c_str());
 	else
@@ -153,16 +154,20 @@ int main(int argc, char* argv[])
 
 	// This is done this way because of the circular constructors.
 	struct BlockchainObjects
-	{
-		Blockchain m_blockchain;
-		tx_memory_pool m_mempool;
-		service_nodes::service_node_list m_service_node_list;
-		triton::deregister_vote_pool m_deregister_vote_pool;
-		BlockchainObjects() :
-			m_blockchain(m_mempool, m_service_node_list, m_deregister_vote_pool),
-			m_service_node_list(m_blockchain),
-			m_mempool(m_blockchain) { }
-	};
+  {
+	  Blockchain m_blockchain;
+	  tx_memory_pool m_mempool;
+	  service_nodes::service_node_list m_service_node_list;
+	  triton::deregister_vote_pool m_deregister_vote_pool;
+	  service_nodes::quorum_cop m_quorum_cop;
+	  cryptonote::core m_core;
+	  BlockchainObjects() :
+		  m_core(nullptr),
+		  m_blockchain(m_mempool, m_service_node_list, m_deregister_vote_pool),
+		  m_service_node_list(m_blockchain, m_quorum_cop),
+		  m_mempool(m_blockchain),
+		  m_quorum_cop(m_core) { }
+  };
 	BlockchainObjects* blockchain_objects = new BlockchainObjects();
 	Blockchain* core_storage = &(blockchain_objects->m_blockchain);
 	tx_memory_pool& m_mempool = blockchain_objects->m_mempool;

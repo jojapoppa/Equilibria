@@ -146,7 +146,7 @@ namespace
   const command_line::arg_descriptor<bool> arg_non_deterministic = {"non-deterministic", sw::tr("Generate non-deterministic view and spend keys"), false};
   const command_line::arg_descriptor<bool> arg_allow_mismatched_daemon_version = {"allow-mismatched-daemon-version", sw::tr("Allow communicating with a daemon that uses a different RPC version"), false};
   const command_line::arg_descriptor<uint64_t> arg_restore_height = {"restore-height", sw::tr("Restore from specific blockchain height"), 0};
-  const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the triton network"), false};
+  const command_line::arg_descriptor<bool> arg_do_not_relay = {"do-not-relay", sw::tr("The newly created transaction will not be relayed to the equilibria network"), false};
   const command_line::arg_descriptor<bool> arg_create_address_file = {"create-address-file", sw::tr("Create an address file for new wallets"), false};
   const command_line::arg_descriptor<std::string> arg_subaddress_lookahead = {"subaddress-lookahead", tools::wallet2::tr("Set subaddress lookahead sizes to <major>:<minor>"), ""};
   const command_line::arg_descriptor<bool> arg_use_english_language_names = {"use-english-language-names", sw::tr("Display English language names"), false};
@@ -358,7 +358,7 @@ namespace
     std::stringstream prompt;
     prompt << sw::tr("For URL: ") << url
            << ", " << dnssec_str << std::endl
-           << sw::tr(" Triton Address = ") << addresses[0]
+           << sw::tr(" Equilibria Address = ") << addresses[0]
            << std::endl
            << sw::tr("Is this OK? (Y/n) ")
     ;
@@ -1404,7 +1404,7 @@ bool simple_wallet::export_raw_multisig(const std::vector<std::string> &args)
     for (auto &ptx: txs.m_ptx)
     {
       const crypto::hash txid = cryptonote::get_transaction_hash(ptx.tx);
-      const std::string filename = std::string("raw_multisig_triton_tx_") + epee::string_tools::pod_to_hex(txid);
+      const std::string filename = std::string("raw_multisig_equilibria_tx_") + epee::string_tools::pod_to_hex(txid);
       if (!filenames.empty())
         filenames += ", ";
       filenames += filename;
@@ -1825,7 +1825,7 @@ bool simple_wallet::save_known_rings(const std::vector<std::string> &args)
 
 bool simple_wallet::version(const std::vector<std::string> &args)
 {
-  message_writer() << "Triton '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL << ")";
+  message_writer() << "Equilibria '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL << ")";
   return true;
 }
 
@@ -2352,7 +2352,15 @@ simple_wallet::simple_wallet()
                            boost::bind(&simple_wallet::locked_sweep_all, this, _1),
                            tr("locked_sweep_all [index=<N1>[,<N2>,...]] [<priority>] [<ring_size>] <address> <lockblocks> [<payment_id>]"),
                            tr("Send all unlocked balance to an address and lock it for <lockblocks> (max. 1000000). If the parameter \"index<N1>[,<N2>,...]\" is specified, the wallet sweeps outputs received by those address indices. If omitted, the wallet randomly chooses an address index to be used. <priority> is the priority of the sweep. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used. <ring_size> is the number of inputs to include for untraceability."));
- m_cmd_binder.set_handler("register_service_node",
+  m_cmd_binder.set_handler("burn",
+                           boost::bind(&simple_wallet::make_burn_transaction, this, _1),
+                           tr("burn <amount>"),
+                           tr("Burn XTRI for USDE using the most recent conversion rate"));
+  m_cmd_binder.set_handler("mint",
+                           boost::bind(&simple_wallet::make_mint_transaction, this, _1),
+                           tr("mint <amount> <mint_key>"),
+                           tr("Exchange USDE to mint new XEQ at the most recent conversion rate"));
+  m_cmd_binder.set_handler("register_service_node",
                            boost::bind(&simple_wallet::register_service_node, this, _1),
                            tr("register_service_node [index=<N1>[,<N2>,...]] [priority] [auto] [<address1> <fraction1> [<address2> <fraction2> [...]]] <expiration timestamp> <pubkey> <signature> <amount>"),
                            tr("Send <amount> to this wallet's main account, locked for the required staking time plus a small buffer. If the parameter \"index<N1>[,<N2>,...]\" is specified, the wallet stakes outputs received by those address indices. <priority> is the priority of the stake. The higher the priority, the higher the transaction fee. Valid values in priority order (from lowest to highest) are: unimportant, normal, elevated, priority. If omitted, the default value (see the command \"set priority\") is used."));
@@ -4370,60 +4378,83 @@ bool simple_wallet::refresh(const std::vector<std::string>& args)
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::show_balance_unlocked(bool detailed)
 {
-	std::string extra;
-	if (m_wallet->has_multisig_partial_key_images())
-		extra = tr(" (Some owned outputs have partial key images - import_multisig_info needed)");
-	else if (m_wallet->has_unknown_key_images())
-		extra += tr(" (Some owned outputs have missing key images - import_key_images needed)");
+  std::string extra;
+  if (m_wallet->has_multisig_partial_key_images())
+    extra = tr(" (Some owned outputs have partial key images - import_multisig_info needed)");
+  else if (m_wallet->has_unknown_key_images())
+    extra += tr(" (Some owned outputs have missing key images - import_key_images needed)");
 
 
   std::vector<transfer_view> all_transfers;
   std::vector<std::string> local_args;
-	if (!get_transfers(local_args, all_transfers))
-		return true;
+  if (!get_transfers(local_args, all_transfers))
+    return true;
 
-	PAUSE_READLINE();
+  PAUSE_READLINE();
   uint64_t snode_rewards = 0;
+  uint64_t USDE_balance = 0;
   uint64_t unlocked_bal = m_wallet->unlocked_balance(m_current_subaddress_account);
 
-	for (const auto& transfer : all_transfers)
-	{
-		if (!transfer.outputs.empty())
-		{
-			for (const auto& output : transfer.outputs)
-			{
-        if (transfer.type == tools::pay_type::service_node){
-          if((snode_rewards + transfer.amount) <= unlocked_bal){
+  for (const auto& transfer : all_transfers)
+  {
+    if (!transfer.outputs.empty())
+    {
+      for (const auto& output : transfer.outputs)
+      {
+        if (transfer.type == tools::pay_type::service_node) 
+        {
+          if((snode_rewards + transfer.amount) <= unlocked_bal)
+          {
             snode_rewards += transfer.amount;
           }
         }
-			}
-		}
+        else
+        {
+          crypto::public_key burn_pubkey;
+          get_burn_pubkey(burn_pubkey);
+          const cryptonote::account_public_address burn_address = {burn_pubkey, burn_pubkey};
+          std::string burn_addr_string = get_account_address_as_str(m_wallet->nettype(), false, burn_address);
+          if (output.wallet_addr == burn_addr_string)
+          {
+            try {
+              uint64_t height = boost::get<uint64_t>(transfer.block);
+              std::pair<uint64_t, uint64_t> ribbons_at_height = m_wallet->get_ribbons_at_height(height);
+              USDE_balance += (output.amount * ribbons_at_height.second) / 100;
+            }
+            catch (boost::bad_get) {
+              LOG_PRINT_L2("Caught boost::bad_get, it's likely that we're trying to get the height of a transaction that is still in the mempool");
+            }
+          }
+        }
+      }
+    }  
   }
+  
 
-	success_msg_writer() << tr("Currently selected account: [") << m_current_subaddress_account << tr("] ") << m_wallet->get_subaddress_label({ m_current_subaddress_account, 0 });
-	const std::string tag = m_wallet->get_account_tags().second[m_current_subaddress_account];
-	success_msg_writer() << tr("Tag: ") << (tag.empty() ? std::string{ tr("(No tag assigned)") } : tag);
-	success_msg_writer() << tr("Balance: ") << print_money(m_wallet->balance(m_current_subaddress_account)) << ", "
-		<< tr("unlocked balance: ") << print_money(unlocked_bal) << extra << ", "
-    		<< tr("Service Rewards: ") << print_money(snode_rewards);
-;
-	std::map<uint32_t, uint64_t> balance_per_subaddress = m_wallet->balance_per_subaddress(m_current_subaddress_account);
-	std::map<uint32_t, uint64_t> unlocked_balance_per_subaddress = m_wallet->unlocked_balance_per_subaddress(m_current_subaddress_account);
-	if (!detailed || balance_per_subaddress.empty())
-		return true;
-	success_msg_writer() << tr("Balance per address:");
-	success_msg_writer() << boost::format("%15s %21s %21s %7s %21s") % tr("Address") % tr("Balance") % tr("Unlocked balance") % tr("Outputs") % tr("Label");
-	std::vector<tools::wallet2::transfer_details> transfers;
-	m_wallet->get_transfers(transfers);
-	for (const auto& i : balance_per_subaddress)
-	{
-		cryptonote::subaddress_index subaddr_index = { m_current_subaddress_account, i.first };
-		std::string address_str = m_wallet->get_subaddress_as_str(subaddr_index).substr(0, 6);
-		uint64_t num_unspent_outputs = std::count_if(transfers.begin(), transfers.end(), [&subaddr_index](const tools::wallet2::transfer_details& td) { return !td.m_spent && td.m_subaddr_index == subaddr_index; });
-		success_msg_writer() << boost::format(tr("%8u %6s %21s %21s %7u %21s")) % i.first % address_str % print_money(i.second) % print_money(unlocked_balance_per_subaddress[i.first]) % num_unspent_outputs % m_wallet->get_subaddress_label(subaddr_index);
-	}
-	return true;
+  success_msg_writer() << tr("Currently selected account: [") << m_current_subaddress_account << tr("] ") << m_wallet->get_subaddress_label({ m_current_subaddress_account, 0 });
+  const std::string tag = m_wallet->get_account_tags().second[m_current_subaddress_account];
+  success_msg_writer() << tr("Tag: ") << (tag.empty() ? std::string{ tr("(No tag assigned)") } : tag);
+  success_msg_writer() << tr("XEQ balance: ") << print_money(m_wallet->balance(m_current_subaddress_account)) << ", "
+    << tr("XEQ unlocked balance: ") << print_money(unlocked_bal) << extra << ", "
+    << tr("USDE balance: $") << print_money(USDE_balance) << ", "
+    << tr("Service Rewards (XEQ): ") << print_money(snode_rewards);
+
+  std::map<uint32_t, uint64_t> balance_per_subaddress = m_wallet->balance_per_subaddress(m_current_subaddress_account);
+  std::map<uint32_t, uint64_t> unlocked_balance_per_subaddress = m_wallet->unlocked_balance_per_subaddress(m_current_subaddress_account);
+  if (!detailed || balance_per_subaddress.empty())
+    return true;
+  success_msg_writer() << tr("Balance per address:");
+  success_msg_writer() << boost::format("%15s %21s %21s %7s %21s") % tr("Address") % tr("Balance") % tr("Unlocked balance") % tr("Outputs") % tr("Label");
+  std::vector<tools::wallet2::transfer_details> transfers;
+  m_wallet->get_transfers(transfers);
+  for (const auto& i : balance_per_subaddress)
+  {
+    cryptonote::subaddress_index subaddr_index = { m_current_subaddress_account, i.first };
+    std::string address_str = m_wallet->get_subaddress_as_str(subaddr_index).substr(0, 6);
+    uint64_t num_unspent_outputs = std::count_if(transfers.begin(), transfers.end(), [&subaddr_index](const tools::wallet2::transfer_details& td) { return !td.m_spent && td.m_subaddr_index == subaddr_index; });
+    success_msg_writer() << boost::format(tr("%8u %6s %21s %21s %7u %21s")) % i.first % address_str % print_money(i.second) % print_money(unlocked_balance_per_subaddress[i.first]) % num_unspent_outputs % m_wallet->get_subaddress_label(subaddr_index);
+  }
+  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::show_balance(const std::vector<std::string>& args/* = std::vector<std::string>()*/)
@@ -4988,7 +5019,7 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     }
     else
     {
-      if (boost::starts_with(local_args[i], "triton:"))
+      if (boost::starts_with(local_args[i], "equilibria:"))
         fail_msg_writer() << tr("Invalid last argument: ") << local_args.back() << ": " << error;
       else
         fail_msg_writer() << tr("Invalid last argument: ") << local_args.back();
@@ -5226,26 +5257,26 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_triton_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_equilibria_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_triton_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_equilibria_tx";
       }
     }
     else
@@ -5279,6 +5310,131 @@ bool simple_wallet::locked_transfer(const std::vector<std::string> &args_)
 bool simple_wallet::locked_sweep_all(const std::vector<std::string> &args_)
 {
   return sweep_main(0, true, args_);
+}
+//----------------------------------------------------------------------------------------------------
+bool simple_wallet::make_burn_transaction(const std::vector<std::string> &args_)
+{
+
+  if (!try_connect_to_daemon())
+    return true;
+
+  if(args_.size() < 1)
+  {
+    fail_msg_writer() << tr("wrong number of arguments");
+    return true;
+  }
+
+  uint64_t amount;
+  if(!cryptonote::parse_amount(amount, args_[0]))
+  {
+    fail_msg_writer() << tr("amount is wrong: ") << amount <<
+          ", " << tr("expected number from 0 to ") << print_money(std::numeric_limits<uint64_t>::max());
+    return true;
+  }
+  
+  cryptonote::COMMAND_RPC_GET_INFO::request req = AUTO_VAL_INIT(req);
+  cryptonote::COMMAND_RPC_GET_INFO::response res = AUTO_VAL_INIT(res);
+  bool r = m_wallet->invoke_http_json_rpc("/json_rpc", "get_info", req, res);
+  
+  if (!r)
+  {
+    fail_msg_writer() << "Failed to get latest ribbon data from daemon";
+    return true;
+  }
+  
+  uint64_t USDE_estimate = (res.last_ribbon_red * amount) / 100;
+  
+  std::string prompt = std::string("You will exchange ") + std::string(args_[0]) + std::string(" XEQ for ~$") + std::string(print_money(USDE_estimate)) + std::string(" USDE @ the rate of $") + print_money(res.last_ribbon_red * 100) + std::string(" per XEQ \nIs this okay?  (Y/Yes/N/No): ");
+  std::string accepted = input_line(prompt);
+  if (std::cin.eof())
+  return true;
+  if (!command_line::is_yes(accepted))
+  {
+   fail_msg_writer() << tr("Exchange transaction cancelled.");
+   return true;
+  }
+  
+  SCOPED_WALLET_UNLOCK();
+  try
+  {
+    crypto::public_key burn_pubkey;
+    cryptonote::get_burn_pubkey(burn_pubkey);
+    
+    std::vector<uint8_t> extra;
+    std::set<uint32_t> subaddr_indices;
+    std::vector<cryptonote::tx_destination_entry> dsts;
+    cryptonote::tx_destination_entry burn_dst;
+    
+    burn_dst.original = ""; //not needed
+    burn_dst.addr.m_spend_public_key = burn_pubkey;
+    burn_dst.addr.m_view_public_key = burn_pubkey;
+    burn_dst.amount = amount;
+    burn_dst.is_subaddress = false;
+    burn_dst.is_integrated = false;
+    dsts.push_back(burn_dst);
+    
+    crypto::public_key mint_pubkey;
+    crypto::secret_key mint_seckey;
+    crypto::generate_keys(mint_pubkey, mint_seckey); // TODO: make this deterministic
+    std::vector<tools::wallet2::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, 1, 0, 1, extra, m_current_subaddress_account, subaddr_indices, false, true, mint_pubkey);
+ 
+    commit_or_save(ptx_vector, m_do_not_relay);
+
+  }
+  catch (const std::exception &e)
+  {
+    handle_transfer_exception(std::current_exception(), m_wallet->is_trusted_daemon());
+  }
+  catch (...)
+  {
+    LOG_ERROR("unknown error");
+    fail_msg_writer() << tr("unknown error");
+  }
+  //m_wallet->save_mint_key(ptx_vector[0], mint_seckey);
+  return true;
+}
+//----------------------------------------------------------------------------------------------------
+bool simple_wallet::make_mint_transaction(const std::vector<std::string> &args_)
+{
+
+  if (!try_connect_to_daemon())
+    return true;
+
+  uint64_t amount;
+  if(!cryptonote::parse_amount(amount, args_[0]))
+  {
+    fail_msg_writer() << tr("Exchange amount is not valid!");
+    return true;
+  }
+  cryptonote::blobdata blob;
+  if(!epee::string_tools::parse_hexstr_to_binbuff(args_[1], blob))
+  {
+    fail_msg_writer() << tr("Mint key parse error...");
+    return true;
+  }
+
+  crypto::secret_key mint_seckey = *reinterpret_cast<const crypto::secret_key*>(blob.data());
+  crypto::public_key mint_pubkey;
+  crypto::secret_key_to_public_key(mint_seckey, mint_pubkey);
+  
+  SCOPED_WALLET_UNLOCK();
+  
+  std::vector<uint8_t> extra;
+  std::set<uint32_t> subaddr_indices;
+  std::vector<cryptonote::tx_destination_entry> dsts;
+  cryptonote::tx_destination_entry dst;
+  
+  dst.original = ""; //not needed, it's our own address
+  dst.addr = m_wallet->get_account_public_address();
+  dst.amount = amount;
+  dst.is_subaddress = false;
+  dst.is_integrated = false;
+  dsts.push_back(dst);
+  
+  std::vector<tools::wallet2::pending_tx> ptx_vector = m_wallet->create_transactions_2(dsts, 0, 0, 1, extra, m_current_subaddress_account, subaddr_indices, false, false, mint_pubkey, mint_seckey);
+  commit_or_save(ptx_vector, m_do_not_relay);
+  
+  return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::register_service_node_main(
@@ -5491,26 +5647,26 @@ bool simple_wallet::register_service_node_main(
 		// actually commit the transactions
 		if (m_wallet->multisig())
 		{
-			bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_triton_tx");
+			bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_equilibria_tx");
 			if (!r)
 			{
 				fail_msg_writer() << tr("Failed to write transaction(s) to file");
 			}
 			else
 			{
-				success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_triton_tx";
+				success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_equilibria_tx";
 			}
 		}
 		else if (m_wallet->watch_only())
 		{
-			bool r = m_wallet->save_tx(ptx_vector, "unsigned_triton_tx");
+			bool r = m_wallet->save_tx(ptx_vector, "unsigned_equilibria_tx");
 			if (!r)
 			{
 				fail_msg_writer() << tr("Failed to write transaction(s) to file");
 			}
 			else
 			{
-				success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_triton_tx";
+				success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_equilibria_tx";
 			}
 		}
 		else
@@ -5831,14 +5987,14 @@ bool simple_wallet::stake_main(
 	 }
 	 if (amount > can_contrib_total)
 	 {
-		 success_msg_writer() << tr("You may only contribute up to ") << print_money(can_contrib_total) << tr(" more triton to this service node");
+		 success_msg_writer() << tr("You may only contribute up to ") << print_money(can_contrib_total) << tr(" more equilibria to this service node");
 		 success_msg_writer() << tr("Reducing your stake from ") << print_money(amount) << tr(" to ") << print_money(can_contrib_total);
 		 amount = can_contrib_total;
 	 }
 	 if (amount < must_contrib_total)
 	 {
 		if (is_preexisting_contributor)
-			success_msg_writer() << tr("Warning: You must contribute ") << print_money(must_contrib_total) << tr(" triton to meet your registration requirements for this service node");
+			success_msg_writer() << tr("Warning: You must contribute ") << print_money(must_contrib_total) << tr(" equilibria to meet your registration requirements for this service node");
 
 		 if (amount == 0)
 		 {
@@ -5856,7 +6012,7 @@ bool simple_wallet::stake_main(
 			 else if (!is_preexisting_contributor || autostake)
 			 {
 				 if (!is_preexisting_contributor)
-					 fail_msg_writer() << tr("You must contribute atleast ") << print_money(must_contrib_total) << tr(" triton to become a contributor for this service node");
+					 fail_msg_writer() << tr("You must contribute atleast ") << print_money(must_contrib_total) << tr(" equilibria to become a contributor for this service node");
 
 				 return true;
 			 }
@@ -5962,26 +6118,26 @@ bool simple_wallet::stake_main(
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_triton_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_equilibria_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_triton_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_equilibria_tx";
       }
     }
     else
@@ -6235,26 +6391,26 @@ bool simple_wallet::sweep_unmixable(const std::vector<std::string> &args_)
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_triton_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_equilibria_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_triton_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_equilibria_tx";
       }
     }
     else
@@ -6558,26 +6714,26 @@ bool simple_wallet::sweep_main(uint64_t below, bool locked, const std::vector<st
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_triton_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_equilibria_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_triton_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_equilibria_tx";
       }
     }
     else
@@ -6790,26 +6946,26 @@ bool simple_wallet::sweep_single(const std::vector<std::string> &args_)
     // actually commit the transactions
     if (m_wallet->multisig())
     {
-      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_triton_tx");
+      bool r = m_wallet->save_multisig_tx(ptx_vector, "multisig_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "multisig_equilibria_tx";
       }
     }
     else if (m_wallet->watch_only())
     {
-      bool r = m_wallet->save_tx(ptx_vector, "unsigned_triton_tx");
+      bool r = m_wallet->save_tx(ptx_vector, "unsigned_equilibria_tx");
       if (!r)
       {
         fail_msg_writer() << tr("Failed to write transaction(s) to file");
       }
       else
       {
-        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_triton_tx";
+        success_msg_writer(true) << tr("Unsigned transaction(s) successfully written to file: ") << "unsigned_equilibria_tx";
       }
     }
     else
@@ -7093,7 +7249,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
   std::vector<tools::wallet2::pending_tx> ptx;
   try
   {
-    bool r = m_wallet->sign_tx("unsigned_triton_tx", "signed_triton_tx", ptx, [&](const tools::wallet2::unsigned_tx_set &tx){ return accept_loaded_tx(tx); }, export_raw);
+    bool r = m_wallet->sign_tx("unsigned_equilibria_tx", "signed_equilibria_tx", ptx, [&](const tools::wallet2::unsigned_tx_set &tx){ return accept_loaded_tx(tx); }, export_raw);
     if (!r)
     {
       fail_msg_writer() << tr("Failed to sign transaction");
@@ -7113,7 +7269,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
       txids_as_text += (", ");
     txids_as_text += epee::string_tools::pod_to_hex(get_transaction_hash(t.tx));
   }
-  success_msg_writer(true) << tr("Transaction successfully signed to file ") << "signed_triton_tx" << ", txid " << txids_as_text;
+  success_msg_writer(true) << tr("Transaction successfully signed to file ") << "signed_equilibria_tx" << ", txid " << txids_as_text;
   if (export_raw)
   {
     std::string rawfiles_as_text;
@@ -7121,7 +7277,7 @@ bool simple_wallet::sign_transfer(const std::vector<std::string> &args_)
     {
       if (i > 0)
         rawfiles_as_text += ", ";
-      rawfiles_as_text += "signed_triton_tx_raw" + (ptx.size() == 1 ? "" : ("_" + std::to_string(i)));
+      rawfiles_as_text += "signed_equilibria_tx_raw" + (ptx.size() == 1 ? "" : ("_" + std::to_string(i)));
     }
     success_msg_writer(true) << tr("Transaction raw hex data exported to ") << rawfiles_as_text;
   }
@@ -9304,9 +9460,15 @@ void simple_wallet::commit_or_save(std::vector<tools::wallet2::pending_tx>& ptx_
     }
     else
     {
-      m_wallet->commit_tx(ptx);
-      success_msg_writer(true) << tr("Transaction successfully submitted, transaction ") << txid << ENDL
-      << tr("You can check its status by using the `show_transfers` command.");
+      if (!m_wallet->commit_tx(ptx))
+      {
+        fail_msg_writer() << tr("Failed to commit transaction, try again");
+      }
+      else
+      {
+        success_msg_writer(true) << tr("Transaction successfully submitted, transaction ") << txid << ENDL
+        << tr("You can check its status by using the `show_transfers` command.");
+      }
     }
     // if no exception, remove element from vector
     ptx_vector.pop_back();
@@ -9354,12 +9516,12 @@ int main(int argc, char* argv[])
   bool should_terminate = false;
   std::tie(vm, should_terminate) = wallet_args::main(
    argc, argv,
-   "triton-wallet-cli [--wallet-file=<file>|--generate-new-wallet=<file>] [<COMMAND>]",
-    sw::tr("This is the command line triton wallet. It needs to connect to a triton\ndaemon to work correctly.\nWARNING: Do not reuse your triton keys on another fork, UNLESS this fork has key reuse mitigations built in. Doing so will harm your privacy."),
+   "equilibria-wallet-cli [--wallet-file=<file>|--generate-new-wallet=<file>] [<COMMAND>]",
+    sw::tr("This is the command line equilibria wallet. It needs to connect to a equilibria\ndaemon to work correctly.\nWARNING: Do not reuse your equilibria keys on another fork, UNLESS this fork has key reuse mitigations built in. Doing so will harm your privacy."),
     desc_params,
     positional_options,
     [](const std::string &s, bool emphasis){ tools::scoped_message_writer(emphasis ? epee::console_color_white : epee::console_color_default, true) << s; },
-    "triton-wallet-cli.log"
+    "equilibria-wallet-cli.log"
   );
 
   if (!vm)

@@ -715,6 +715,13 @@ namespace cryptonote
     uint64_t get_current_cumulative_block_weight_median() const;
 
     /**
+     * @brief creates ribbon red which is a multi moving average calculation 
+     *
+     * @return the average price
+     */
+     uint64_t create_ribbon_red(uint64_t height) const;
+     
+    /**
      * @brief gets the difficulty of the block with a given height
      *
      * @param i the height
@@ -1202,10 +1209,11 @@ namespace cryptonote
      * @param output_keys return-by-reference the public keys of the outputs in the input set
      * @param rct_signatures the ringCT signatures, which are only valid if tx version > 1
      * @param pmax_related_block_height return-by-pointer the height of the most recent block in the input set
+     * @param is_mint_tx bool is the transaction submitted minting XEQ from USDE
      *
      * @return false if any output is not yet unlocked, or is missing, otherwise true
      */
-    bool check_tx_input(size_t tx_version,const txin_to_key& txin, const crypto::hash& tx_prefix_hash, const std::vector<crypto::signature>& sig, const rct::rctSig &rct_signatures, std::vector<rct::ctkey> &output_keys, uint64_t* pmax_related_block_height);
+    bool check_tx_input(size_t tx_version,const txin_to_key& txin, const crypto::hash& tx_prefix_hash, const std::vector<crypto::signature>& sig, const rct::rctSig &rct_signatures, std::vector<rct::ctkey> &output_keys, uint64_t* pmax_related_block_height, bool is_mint_tx = false, bool is_burn_tx = false);
 
     /**
      * @brief validate a transaction's inputs and their keys
@@ -1397,6 +1405,16 @@ namespace cryptonote
      * @return true if spendable, otherwise false
      */
      bool is_output_spendtime_unlocked(uint64_t unlock_time) const;
+     
+    /**
+     * @brief fetches txs from mixins according to key offsets and an amount
+     *
+     * @param txin_to_key the tx input. cannot be txin_gen
+     * @param txs return by reference vector of transactions
+     *
+     * @return true if all transactions are found
+     */
+     bool get_input_txs_from_txin(txin_to_key txin, std::vector<transaction>& txs);
 
     /**
      * @brief stores an invalid block in a separate container

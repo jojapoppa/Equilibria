@@ -143,7 +143,7 @@ namespace service_nodes
 		public cryptonote::Blockchain::ValidateMinerTxHook
 	{
 	public:
-		service_node_list(cryptonote::Blockchain& blockchain);
+		service_node_list(cryptonote::Blockchain& blockchain, service_nodes::quorum_cop &quorum_cop);
 		void block_added(const cryptonote::block& block, const std::vector<cryptonote::transaction>& txs) override;
 		void blockchain_detached(uint64_t height) override;
 		void register_hooks(service_nodes::quorum_cop &quorum_cop);
@@ -151,6 +151,9 @@ namespace service_nodes
 		bool validate_miner_tx(const crypto::hash& prev_id, const cryptonote::transaction& miner_tx, uint64_t height, int hard_fork_version, cryptonote::block_reward_parts const &reward_parts) const override;
 		std::vector<std::pair<cryptonote::account_public_address, uint64_t>> get_winner_addresses_and_portions(const crypto::hash& prev_id) const;
 		crypto::public_key select_winner(const crypto::hash& prev_id) const;
+		std::pair<uint64_t, uint64_t> get_ribbon_data(crypto::public_key pubkey, uint64_t height) const;
+		void clear_ribbon_data(uint64_t clear_height);
+		bool send_ribbon_data();
 
 		bool is_service_node(const crypto::public_key& pubkey) const;
 
@@ -159,6 +162,8 @@ namespace service_nodes
 		/// Note(maxim): this should not affect thread-safety as the returned object is const
 		const std::shared_ptr<const quorum_state> get_quorum_state(uint64_t height) const;
 		std::vector<service_node_pubkey_info> get_service_node_list_state(const std::vector<crypto::public_key> &service_node_pubkeys) const;
+		std::vector<crypto::public_key> get_service_nodes_pubkeys() const;
+		crypto::public_key get_random_service_node_pubkey();
 
 		void set_db_pointer(cryptonote::BlockchainDB* db);
 		void set_my_service_node_keys(crypto::public_key const *pub_key);
@@ -274,8 +279,6 @@ namespace service_nodes
 		void process_contribution_tx(const cryptonote::transaction& tx, uint64_t block_height, uint32_t index);
 		bool process_deregistration_tx(const cryptonote::transaction& tx, uint64_t block_height);
 
-		std::vector<crypto::public_key> get_service_nodes_pubkeys() const;
-
 		template<typename T>
 		void block_added_generic(const cryptonote::block& block, const T& txs);
 
@@ -302,6 +305,7 @@ namespace service_nodes
 		crypto::public_key const *m_service_node_pubkey;
 
 		cryptonote::BlockchainDB* m_db;
+		service_nodes::quorum_cop &m_quorum_cop;
 
 		std::map<block_height, std::shared_ptr<const quorum_state>> m_quorum_states;
 	};

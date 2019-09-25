@@ -183,9 +183,9 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   core::core(i_cryptonote_protocol* pprotocol):
               m_mempool(m_blockchain_storage),
-              m_service_node_list(m_blockchain_storage),
-              m_blockchain_storage(m_mempool, m_service_node_list, m_deregister_vote_pool),
               m_quorum_cop(*this),
+              m_service_node_list(m_blockchain_storage, m_quorum_cop),
+              m_blockchain_storage(m_mempool, m_service_node_list, m_deregister_vote_pool),
               m_miner(this),
               m_miner_address(boost::value_initialized<account_public_address>()),
               m_starter_message_showed(false),
@@ -1267,6 +1267,63 @@ namespace cryptonote
 	  return m_quorum_cop.handle_uptime_proof(proof);
   }
   //-----------------------------------------------------------------------------------------------
+  bool core::submit_ribbon_data()
+  {
+    if (m_service_node)
+    {
+      cryptonote_connection_context fake_context = AUTO_VAL_INIT(fake_context);
+      NOTIFY_RIBBON_DATA::request r;
+      m_quorum_cop.generate_ribbon_data_request(m_service_node_pubkey, m_service_node_key, r);
+      bool relayed = get_protocol()->relay_ribbon_data(r, fake_context);
+      if (!relayed)
+      {
+        MERROR("Failed to relay ribbon data");
+        return false;
+      }else{
+		    MGINFO("Submitted ribbon-data at Height: " << r.height << "for service node (yours): " << m_service_node_pubkey << std::endl << 
+        "Ribbon Green Price: " << r.ribbon_green << std::endl << 
+        "Ribbon Blue Price: " << r.ribbon_blue << std::endl <<
+        "Volume: " << r.ribbon_volume << std::endl);
+        return true;
+      }
+    }
+    return true;
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool core::handle_ribbon_data(const NOTIFY_RIBBON_DATA::request &data)
+  {
+    return m_quorum_cop.handle_ribbon_data_received(data);
+  }
+  //-----------------------------------------------------------------------------------------------
+  std::pair<uint64_t, uint64_t> core::get_top_block_ribbon_data()
+  {
+    uint64_t top_block_height = m_blockchain_storage.get_current_blockchain_height() - 1;
+    crypto::hash top_block_hash = m_blockchain_storage.get_block_id_by_height(top_block_height);
+    cryptonote::block top_blk;
+    m_blockchain_storage.get_block_by_hash(top_block_hash, top_blk);
+    return std::make_pair(top_blk.ribbon_blue, top_blk.ribbon_red);
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool core::store_trade_history_at_height(std::vector<service_nodes::exchange_trade>& trades, uint64_t height)
+  {
+    if (m_service_node)
+    {
+      m_blockchain_storage.get_db().set_trade_history_at_height(trades, height);
+      return true;
+    }
+    return false;
+  }
+  //-----------------------------------------------------------------------------------------------
+  bool core::get_trade_history_for_height(std::vector<service_nodes::exchange_trade>& trades, const uint64_t height)
+  {
+    if (m_service_node)
+    {
+      trades = m_blockchain_storage.get_db().get_trade_history_for_height(height);
+      return true;
+    }
+    return false;
+  }
+  //-----------------------------------------------------------------------------------------------
   void core::on_transaction_relayed(const cryptonote::blobdata& tx_blob)
   {
     std::vector<std::pair<crypto::hash, cryptonote::blobdata>> txs;
@@ -1600,9 +1657,9 @@ namespace cryptonote
 		  // Code snippet from Github @Jagerman
 		  m_check_uptime_proof_interval.do_call([&states, this]() {
 			  uint64_t last_uptime = m_quorum_cop.get_uptime_proof(states[0].pubkey);
-			  if (last_uptime <= static_cast<uint64_t>(time(nullptr) - UPTIME_PROOF_FREQUENCY_IN_SECONDS))
+			  if (last_uptime <= static_cast<uint64_t>(time(nullptr) - UPTIME_PROOF_FREQUENCY_IN_SECONDS)){
 				  this->submit_uptime_proof();
-
+        }
 			  return true;
 		  });
 	  }

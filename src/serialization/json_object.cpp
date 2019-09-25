@@ -241,7 +241,7 @@ void fromJsonValue(const rapidjson::Value& val, cryptonote::transaction& tx)
   GET_FROM_JSON_OBJECT(val, tx.version, version);
   GET_FROM_JSON_OBJECT(val, tx.unlock_time, unlock_time);
   GET_FROM_JSON_OBJECT(val, tx.output_unlock_times, output_unlock_times);
-GET_FROM_JSON_OBJECT(val, tx.is_deregister, is_deregister);
+  GET_FROM_JSON_OBJECT(val, tx.is_deregister, is_deregister);
   GET_FROM_JSON_OBJECT(val, tx.vin, inputs);
   GET_FROM_JSON_OBJECT(val, tx.vout, outputs);
   GET_FROM_JSON_OBJECT(val, tx.extra, extra);

@@ -106,7 +106,7 @@ static_assert(STAKING_PORTIONS % 3 == 0, "Use a multiple of three, so that it di
 #define ORPHANED_BLOCKS_MAX_COUNT                       100
 
 
-#define DIFFICULTY_TARGET_V2                            180  // seconds
+#define DIFFICULTY_TARGET_V2                            120  // seconds
 #define DIFFICULTY_TARGET_V1                            60  // seconds - before first fork
 #define DIFFICULTY_WINDOW                               720 // blocks
 #define DIFFICULTY_LAG                                  15  // !!!
@@ -158,7 +158,7 @@ static_assert(STAKING_PORTIONS % 3 == 0, "Use a multiple of three, so that it di
 
 #define ALLOW_DEBUG_COMMANDS
 
-#define CRYPTONOTE_NAME                         "triton"
+#define CRYPTONOTE_NAME                         "equilibria"
 #define CRYPTONOTE_POOLDATA_FILENAME            "poolstate.bin"
 #define CRYPTONOTE_BLOCKCHAINDATA_FILENAME      "data.mdb"
 #define CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME "lock.mdb"
@@ -181,6 +181,9 @@ static_assert(STAKING_PORTIONS % 3 == 0, "Use a multiple of three, so that it di
 #define DEFAULT_TXPOOL_MAX_WEIGHT               648000000ull // 3 days at 300000, in bytes
 
 #define BULLETPROOF_MAX_OUTPUTS                 16
+
+#define BURN_SECKEY                            "b93a07a922a4bc9ebfa3c0dcb1354bb39df811b7a7fb7041562a287439c7340b" // hash_to_scalar("Equilibria")
+#define BURN_PUBKEY                            "5c3cfb3b9b4ae92ce2396303190b8fbd6ab80ecf8d4425951ab1c13712fe5eec" // BURN_SECKEY*G
 
 // New constants are intended to go here
 namespace config
@@ -301,3 +304,4 @@ namespace cryptonote
     }
   };
 }
+

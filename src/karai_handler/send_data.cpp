@@ -118,7 +118,7 @@ namespace karai {
                     bool r = karai::send_oracle_data(payload_data);
                 }
             } else {
-                std::cout << "no contracts" << std::endl;
+                LOG_PRINT_L1("No Contracts on Karai: " + body);
             }
         }
 
@@ -131,7 +131,8 @@ namespace karai {
 
         LOG_PRINT_L1("Sending Oracle data!");
         std::string body = create_json(data);
-        return make_request(body, "/api/v1/new_tx");
+        bool r = make_request(body, "/api/v1/new_tx");
+        return r;
     }
 
     bool send_consensus_data(const std::vector<std::pair<std::string, std::string>> data, const std::vector<std::string> &nodes_on_network)
@@ -141,7 +142,9 @@ namespace karai {
         
         LOG_PRINT_L1("Data: " + body);
 
-        return make_request(body, "/api/v1/new_consensus_tx");
+        bool r = make_request(body, "/api/v1/new_consensus_tx");
+
+        return r;
     }
 
     bool make_request(std::string body, std::string uri)
@@ -154,7 +157,9 @@ namespace karai {
         std::string url = "127.0.0.1";
         http_client.set_server(url, "4203",  boost::none);
 
-        return http_client.invoke_post(uri, body, std::chrono::seconds(10), &res_info, fields);
+        bool r =  http_client.invoke_post(uri, body, std::chrono::seconds(10), &res_info, fields);
+        
+        return r;
     }
 
 

@@ -72,6 +72,8 @@ namespace service_nodes
 		if (!m_core.get_service_node_keys(my_pubkey, my_seckey))
 			return;
 
+		m_core.karai_handler(block);
+
 		time_t const now = time(nullptr);
 		time_t const min_lifetime = 60 * 60 * 2;
 		bool alive_for_min_time = (now - m_core.get_start_time()) >= min_lifetime;

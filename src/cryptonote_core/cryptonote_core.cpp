@@ -1568,8 +1568,6 @@ namespace cryptonote
         arg.b.txs.push_back({tx, crypto::null_hash});
 
       m_pprotocol->relay_block(arg, exclude_context);
-      karai_handler(b);
-
     }
 
     return true;
@@ -1597,7 +1595,6 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::add_new_block(const block& b, block_verification_context& bvc)
   {
-    karai_handler(b);
     return m_blockchain_storage.add_new_block(b, bvc);
   }
 

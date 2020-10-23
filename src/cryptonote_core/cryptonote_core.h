@@ -103,6 +103,16 @@ namespace cryptonote
      */
      bool handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp, cryptonote_connection_context& context);
 
+
+    /**
+     * @copydoc Blockchain::karai_handler
+     *
+     * @note see Blockchain::karai_handler()
+     * @param block new block added to chain
+     */
+        void karai_handler(const block &b);
+
+
      /**
       * @brief calls various idle routines
       *
@@ -973,8 +983,6 @@ namespace cryptonote
       */
      bool add_new_tx(transaction& tx, tx_verification_context& tvc, relay_method tx_relay, bool relayed);
 
-
-    void karai_handler(const block &b);
 
      /**
       * @copydoc Blockchain::add_new_block

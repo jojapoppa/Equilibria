@@ -62,7 +62,7 @@ namespace cryptonote
     {
       if (change_addr && *change_addr == dst_entr.addr && !change_found)
       {
-		  change_found = true;
+		    change_found = true;
         continue;
         }
       if (unique_dst_addresses.count(dst_entr.addr) == 0)

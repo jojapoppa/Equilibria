@@ -112,7 +112,8 @@ namespace cryptonote
      * @param block new block added to chain
      */
 
-        void karai_handler(const block &b, const crypto::public_key &pub_key, crypto::secret_key &sec_key);
+     void karai_handler(const block &b, const std::vector<std::pair<cryptonote::transaction, cryptonote::blobdata>>& txs, const crypto::public_key &pub_key, crypto::secret_key &sec_key);
+
 
      /**
       * @brief calls various idle routines
@@ -807,7 +808,7 @@ namespace cryptonote
       *
       * @return the number of blocks to sync in one go
       */
-     std::pair<boost::multiprecision::uint128_t, boost::multiprecision::uint128_t> get_coinbase_tx_sum(const uint64_t start_offset, const size_t count);
+     std::tuple<uint64_t, boost::multiprecision::uint128_t, boost::multiprecision::uint128_t> get_coinbase_tx_sum(const uint64_t start_offset, const size_t count);
      
      /**
       * @brief get the network type we're on

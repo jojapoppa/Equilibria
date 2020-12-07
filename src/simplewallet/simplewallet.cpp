@@ -7462,8 +7462,7 @@ bool simple_wallet::stake_main(
         {
           if (!is_preexisting_contributor)
             fail_msg_writer() << tr("You must contribute atleast ") << print_money(must_contrib_total) << tr(" equilibria to become a contributor for this service node");
-
-          return true;
+            return true;
         }
       }
     }
@@ -7477,6 +7476,7 @@ bool simple_wallet::stake_main(
   std::vector<uint8_t> extra;
 
   add_service_node_pubkey_to_tx_extra(extra, service_node_key);
+
 
   add_service_node_contributor_to_tx_extra(extra, parse_info.address);
 

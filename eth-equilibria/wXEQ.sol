@@ -6,109 +6,108 @@ pragma solidity >=0.4.22 <0.6.0;
  */
 library SafeMath {
 
-  /**
-  * @dev Multiplies two numbers, reverts on overflow.
-  */
-  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-    // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-    // benefit is lost if 'b' is also tested.
-    // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
-    if (a == 0) {
-      return 0;
+    /**
+    * @dev Multiplies two numbers, reverts on overflow.
+    */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+        if (a == 0) {
+            return 0;
+        }
+
+        uint256 c = a * b;
+        require(c / a == b);
+
+        return c;
     }
 
-    uint256 c = a * b;
-    require(c / a == b);
+    /**
+    * @dev Integer division of two numbers truncating the quotient, reverts on division by zero.
+    */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b > 0);
+        // Solidity only automatically asserts when dividing by 0
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
 
-    return c;
-  }
+        return c;
+    }
 
-  /**
-  * @dev Integer division of two numbers truncating the quotient, reverts on division by zero.
-  */
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b > 0); // Solidity only automatically asserts when dividing by 0
-    uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+    /**
+    * @dev Subtracts two numbers, reverts on overflow (i.e. if subtrahend is greater than minuend).
+    */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b <= a);
+        uint256 c = a - b;
 
-    return c;
-  }
+        return c;
+    }
 
-  /**
-  * @dev Subtracts two numbers, reverts on overflow (i.e. if subtrahend is greater than minuend).
-  */
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b <= a);
-    uint256 c = a - b;
+    /**
+    * @dev Adds two numbers, reverts on overflow.
+    */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a);
 
-    return c;
-  }
+        return c;
+    }
 
-  /**
-  * @dev Adds two numbers, reverts on overflow.
-  */
-  function add(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a + b;
-    require(c >= a);
-
-    return c;
-  }
-
-  /**
-  * @dev Divides two numbers and returns the remainder (unsigned integer modulo),
-  * reverts when dividing by zero.
-  */
-  function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-    require(b != 0);
-    return a % b;
-  }
+    /**
+    * @dev Divides two numbers and returns the remainder (unsigned integer modulo),
+    * reverts when dividing by zero.
+    */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b != 0);
+        return a % b;
+    }
 }
 
 contract WXEQERC20Token {
-    
+
     using SafeMath for *;
-    
-     struct mintXEQStruct {
+
+    struct mintXEQStruct {
         address addr;
         uint amount;
         string xeqAddress;
     }
-    
+
     struct TxStorage {
         string hash;
         uint amountMinted;
     }
-    
+
     string public _name;
     string public _symbol;
     address public contractCreator;
     address[] public minter;
     uint256 public _totalSupply;
     uint8 public _decimals;
-    mapping (address => uint256) public balanceOf;
-    mapping(address => mapping (address => uint256)) allowed;
+    mapping(address => uint256) public _balances;
+    mapping(address => mapping(address => uint256)) _allowed;
     // mintXEQStruct[] public waitingForXEQMint;
-    
-    event Transfer(address indexed from, address indexed to, uint256 value );
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
-    event Mint(address indexed owner, address spender, uint256 value);
-    event Burn(address indexed owner, uint256 value);
 
     constructor() public {
         _decimals = 18;
-        _name = "Wrapped Equilibria";                                 
-        _symbol = "wXEQ";   
+        _name = "Wrapped Equilibria";
+        _symbol = "wXEQ";
         contractCreator = msg.sender;
     }
-    
+
     function decimals() public view returns (uint8) {
         return _decimals;
     }
-    
+
     function name() public view returns (string memory) {
         return _name;
     }
-    
+
     function symbol() public view returns (string memory) {
         return _symbol;
     }
@@ -117,68 +116,121 @@ contract WXEQERC20Token {
         return _totalSupply;
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_to != address(0));
-        require(balanceOf[msg.sender] >= _value);
-        balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);
-        balanceOf[_to] = balanceOf[_to].add(_value);
-        emit Transfer(msg.sender, _to, _value);
-        return true;
+    function balanceOf(address _owner) public view returns (uint256) {
+        return _balances[_owner];
     }
-    
-    function approve(address delegate, uint256 numTokens) public returns (bool success) {
-        require(delegate != address(0));
-        require(balanceOf[msg.sender] >= numTokens);
-        allowed[msg.sender][delegate] = allowed[msg.sender][delegate].add(numTokens);
-        emit Approval(msg.sender, delegate, numTokens);
-        return true;
-    }
-    
-    function allowance(address owner, address delegate) public view returns (uint256) {
-        return allowed[owner][delegate];
-    }
-    
-    function decreaseAllowance(address delegate, uint256 _value) public returns (bool) {
-        require(delegate != address(0));
-        require(allowed[msg.sender][delegate] >= _value);
-        allowed[msg.sender][delegate] = allowed[msg.sender][delegate].sub(_value);
+
+    function transfer(address to, uint256 value) public returns (bool) {
+        require(value <= _balances[msg.sender]);
+        require(to != address(0));
+
+        _balances[msg.sender] = _balances[msg.sender].sub(value);
+        _balances[to] = _balances[to].add(value);
+        emit Transfer(msg.sender, to, value);
         return true;
     }
 
-    function transferFrom(address _from, address _to, uint256 numTokens) public returns (bool success) {
-          require(numTokens <= balanceOf[_from]);
-          require(numTokens <= allowed[_from][_to]);
-          balanceOf[_from] = balanceOf[_from].sub(numTokens);
-          balanceOf[_to] = balanceOf[_to].add(numTokens);
-          allowed[_from][_to] = allowed[_from][_to].sub(numTokens);
-          emit Transfer(_from, _to, numTokens);
-          return true;
+    function approve(address spender, uint256 value) public returns (bool) {
+        require(spender != address(0));
+
+        _allowed[msg.sender][spender] = value;
+        emit Approval(msg.sender, spender, value);
+        return true;
     }
 
-
-    function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] >= _value);
-        require(msg.sender != address(0x0));
-        balanceOf[msg.sender] = balanceOf[msg.sender].sub(_value);            
-        _totalSupply =_totalSupply.sub(_value);   
-        emit Burn(msg.sender, _value);
+    function allowance(
+        address owner,
+        address spender
+    )
+    public
+    view
+    returns (uint256)
+    {
+        return _allowed[owner][spender];
     }
-    
+
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue
+    )
+    public
+    returns (bool)
+    {
+        require(spender != address(0));
+
+        _allowed[msg.sender][spender] = (
+        _allowed[msg.sender][spender].sub(subtractedValue));
+        emit Approval(msg.sender, spender, _allowed[msg.sender][spender]);
+        return true;
+    }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    )
+    public
+    returns (bool)
+    {
+        require(value <= _balances[from]);
+        require(value <= _allowed[from][msg.sender]);
+        require(to != address(0));
+
+        _balances[from] = _balances[from].sub(value);
+        _balances[to] = _balances[to].add(value);
+        _allowed[from][msg.sender] = _allowed[from][msg.sender].sub(value);
+        emit Transfer(from, to, value);
+        return true;
+    }
+
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue
+    )
+    public
+    returns (bool)
+    {
+        require(spender != address(0));
+
+        _allowed[msg.sender][spender] = (
+        _allowed[msg.sender][spender].add(addedValue));
+        emit Approval(msg.sender, spender, _allowed[msg.sender][spender]);
+        return true;
+    }
+
+    function _burn(address account, uint256 amount) public {
+        require(checkMinter());
+        require(account != address(0));
+        require(amount <= _balances[account]);
+
+        _totalSupply = _totalSupply.sub(amount);
+        _balances[account] = _balances[account].sub(amount);
+        emit Transfer(account, address(0), amount);
+    }
+
+    function _burnFrom(address account, uint256 amount) internal {
+        checkMinter();
+        require(amount <= _allowed[account][msg.sender]);
+
+
+        _allowed[account][msg.sender] = _allowed[account][msg.sender].sub(
+            amount);
+        _burn(account, amount);
+    }
+
     // 0.5% fee is temporary - fees will eventually go to Oracle Nodes
     function devFee(uint _value) public pure returns (uint) {
-        return ((_value * 50)/10000);
+        return ((_value * 50) / 10000);
     }
-    
-    function mint(uint256 _value, address addr) public {
+
+    function mint(address account, uint256 amount) public {
         require(checkMinter());
-        _value = _value * 10**14;
-        uint fee = devFee(_value);
-        balanceOf[addr] = balanceOf[addr].add((_value - fee)); 
-        balanceOf[contractCreator] = balanceOf[contractCreator].add(fee);
-        _totalSupply =  _totalSupply.add(_value);  
-        emit Mint(msg.sender, addr, _value);
+        require(account != address(0));
+        _totalSupply = _totalSupply.add(amount);
+        _balances[account] = _balances[account].add(amount);
+        emit Transfer(address(0), account, amount);
     }
-    
+
     function removeMinter(address addr) public returns (bool success) {
         require(msg.sender == contractCreator);
         uint origLen = minter.length;
@@ -190,19 +242,19 @@ contract WXEQERC20Token {
             }
         }
     }
-    
+
     function checkMinter() public view returns (bool success) {
         if (msg.sender == contractCreator) {
             return true;
         }
         for (uint i = 0; i < minter.length; i++) {
-             if (msg.sender == minter[i] || msg.sender == contractCreator) {
-                 return true;
+            if (msg.sender == minter[i] || msg.sender == contractCreator) {
+                return true;
             }
         }
         return false;
     }
-    
+
     function addMinter(address addr) public returns (bool) {
         require(msg.sender == contractCreator);
         uint origLen = minter.length;

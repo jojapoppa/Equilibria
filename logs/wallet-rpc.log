@@ -1,0 +1,149 @@
+2021-06-04 13:54:01.130	     0x11894ee00	INFO	logging	contrib/epee/src/mlog.cpp:273	New log categories: *:WARNING,net:FATAL,net.http:FATAL,net.ssl:FATAL,net.p2p:FATAL,net.cn:FATAL,daemon.rpc:FATAL,global:INFO,verify:FATAL,serialization:FATAL,daemon.rpc.payment:ERROR,stacktrace:INFO,logging:INFO,msgwriter:INFO
+2021-06-04 13:54:01.131	     0x11894ee00	INFO	global	contrib/epee/include/net/http_server_impl_base.h:79	Binding on 127.0.0.1 (IPv4):18082
+2021-06-04 13:54:01.719	     0x11894ee00	WARNING	wallet.rpc	src/wallet/wallet_rpc_server.cpp:4603	Starting wallet RPC server
+2021-06-04 13:54:01.719	     0x11894ee00	INFO	net.http	contrib/epee/include/net/http_server_impl_base.h:96	Run net_service loop( 1 threads)...
+2021-06-04 13:54:01.938	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'asa' is shorter than its prefix length, 4
+2021-06-04 13:54:01.938	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'ave' is shorter than its prefix length, 4
+2021-06-04 13:54:01.939	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'boa' is shorter than its prefix length, 4
+2021-06-04 13:54:01.939	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'cal' is shorter than its prefix length, 4
+2021-06-04 13:54:01.941	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'dar' is shorter than its prefix length, 4
+2021-06-04 13:54:01.941	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'don' is shorter than its prefix length, 4
+2021-06-04 13:54:01.941	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'dos' is shorter than its prefix length, 4
+2021-06-04 13:54:01.942	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'eco' is shorter than its prefix length, 4
+2021-06-04 13:54:01.942	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'eje' is shorter than its prefix length, 4
+2021-06-04 13:54:01.942	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'fax' is shorter than its prefix length, 4
+2021-06-04 13:54:01.942	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'feo' is shorter than its prefix length, 4
+2021-06-04 13:54:01.943	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'fin' is shorter than its prefix length, 4
+2021-06-04 13:54:01.943	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'gen' is shorter than its prefix length, 4
+2021-06-04 13:54:01.944	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'gol' is shorter than its prefix length, 4
+2021-06-04 13:54:01.944	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'haz' is shorter than its prefix length, 4
+2021-06-04 13:54:01.945	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'ira' is shorter than its prefix length, 4
+2021-06-04 13:54:01.946	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'luz' is shorter than its prefix length, 4
+2021-06-04 13:54:01.946	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'mar' is shorter than its prefix length, 4
+2021-06-04 13:54:01.946	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'mes' is shorter than its prefix length, 4
+2021-06-04 13:54:01.946	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'mil' is shorter than its prefix length, 4
+2021-06-04 13:54:01.947	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'oca' is shorter than its prefix length, 4
+2021-06-04 13:54:01.948	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'ojo' is shorter than its prefix length, 4
+2021-06-04 13:54:01.948	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'ola' is shorter than its prefix length, 4
+2021-06-04 13:54:01.948	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'oro' is shorter than its prefix length, 4
+2021-06-04 13:54:01.948	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'oso' is shorter than its prefix length, 4
+2021-06-04 13:54:01.948	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'pan' is shorter than its prefix length, 4
+2021-06-04 13:54:01.949	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'pez' is shorter than its prefix length, 4
+2021-06-04 13:54:01.949	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'pie' is shorter than its prefix length, 4
+2021-06-04 13:54:01.950	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'red' is shorter than its prefix length, 4
+2021-06-04 13:54:01.952	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'res' is shorter than its prefix length, 4
+2021-06-04 13:54:01.952	[RPC0]	WARNING	default	src/mnemonics/language_base.h:132	Español word 'rey' is shorter than its prefix length, 4
+2021-06-04 13:54:07.020	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:5622	Loaded wallet keys file, with public address: TvzwezQ3E18j1FQoSiEjMwXsgzAeWcfg92bjMjpeGeVm82Y1pqHuzDV1VoUKnCH6FbcEvfwKkSyBsdXSLCHCA4YU2AemyzDmA
+2021-06-04 13:54:07.221	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-04 13:54:24.410	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <8229d544707c56a8482edec9c342c5102049700090b06f3929b370185eb64dcf>
+2021-06-04 13:54:24.430	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <8ac7c24ddbfb752d7378bac3a03a7f7338ce9cbf0724e21b0cbc30cf78840e97>
+2021-06-04 13:54:24.449	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <2adecc2f3bb374e9aac0fc748242cdf72ce05c822d7808c988708ff30494c556>
+2021-06-04 13:54:24.468	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <13012123e573452b87e8f9e5d87007ffb850f3c491cced0101409f18e3002732>
+2021-06-04 13:54:25.083	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <ba64b13cd3f7fdb6f9501218bf2c2105cb8f38d6fc7826255d0ec90417048c17>
+2021-06-04 13:54:25.102	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <af83103b2a336c470e20c3b4ee08a336304dd761c207450aab359024dde684be>
+2021-06-04 13:54:25.121	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <ec045ff705fcb72a0f5e03218fbd4614b02485e634d103b251a9f83efa0ff400>
+2021-06-04 13:54:25.142	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <6a8e8fceac3d0f8eda8aa8b8b30b5d815fe064a7cb68f96ba8735b78602cceb4>
+2021-06-04 13:54:25.164	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <0b19fceb1185954b675cb9ecfa9f3e8ff8ee1e1d712dd812cbf12dc958f314fd>
+2021-06-04 13:54:25.184	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <bbef36d8f500fd80b59eb97dec8f6b21c08f5c3ac6bf4fcc28dbcf8fc800ef9c>
+2021-06-04 13:54:25.203	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <526a3b712301d0d75d5c71e793672ec9f548d0406e85428ebf2248ee6b159a38>
+2021-06-04 13:54:25.893	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <bd782e44bfd6358830893e99dfdf293a09e581a665225fdbb5d4e139c9cf8c3e>
+2021-06-04 13:54:25.913	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <26117e0bff7284d7d58a01a197a046474e87a56e5c051abbde3d22ed5b0ff5ee>
+2021-06-04 13:54:25.932	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <ca815667bcec511e4507a41335ad1a4b1c52adeceff8346d263279463fee15ec>
+2021-06-04 13:54:25.952	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 0.0617, with tx: <7f78f2c5c971fd7be75acc0aaa2e63013850e889a27f1833e3ca344c681caa49>
+2021-06-04 13:54:26.949	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 4902.7009, with tx: <eada5c235bde57d54a306d451d38f98b1e0e08efbb45f39d4e84e7f1706648d9>
+2021-06-04 14:06:20.100	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:9210	we could use 1 and 179
+2021-06-04 14:06:23.235	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.h:2266	amount=4902.7009, real_output=15, real_output_in_tx_index=1, indexes: 1642348 1936699 2007712 2054107 2056639 2059364 2061398 2061672 2061804 2062124 2062543 2062908 2063421 2063640 2063720 2064145 
+2021-06-04 14:06:23.235	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.h:2266	amount=1000.0000, real_output=1, real_output_in_tx_index=0, indexes: 1882527 1938505 1960936 2000276 2030226 2048087 2055754 2055938 2057681 2058187 2060205 2062380 2062857 2063579 2064029 2064063 
+2021-06-04 14:06:23.250	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.h:2266	amount=4902.7009, real_output=15, real_output_in_tx_index=1, indexes: 1642348 1936699 2007712 2054107 2056639 2059364 2061398 2061672 2061804 2062124 2062543 2062908 2063421 2063640 2063720 2064145 
+2021-06-04 14:06:23.250	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.h:2266	amount=1000.0000, real_output=1, real_output_in_tx_index=0, indexes: 1882527 1938505 1960936 2000276 2030226 2048087 2055754 2055938 2057681 2058187 2060205 2062380 2062857 2063579 2064029 2064063 
+2021-06-04 14:12:02.995	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2167	Received money: 999.9919, with tx: <b34da5381bbaf1538888ccf6add17d316143f5bf1304738f0f7dfb99d26465f0>
+2021-06-04 14:12:02.996	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2346	Spent money: 1000.0000, with tx: <b34da5381bbaf1538888ccf6add17d316143f5bf1304738f0f7dfb99d26465f0>
+2021-06-04 14:12:02.996	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:2346	Spent money: 4902.7009, with tx: <b34da5381bbaf1538888ccf6add17d316143f5bf1304738f0f7dfb99d26465f0>
+2021-06-04 15:40:11.435	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-04 15:40:11.436	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-04 15:40:11.437	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-04 15:40:11.437	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-04 15:40:11.437	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-04 15:40:11.603	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-04 16:18:51.351	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-04 16:18:51.352	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-04 16:18:51.352	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-04 16:18:51.352	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-04 16:18:51.352	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-04 20:14:22.020	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-04 20:14:22.021	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-04 20:14:22.021	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-04 20:14:22.021	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-04 20:14:22.021	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-04 20:14:22.116	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-04 23:50:32.380	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-04 23:50:32.380	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-04 23:50:32.381	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-04 23:50:32.381	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-04 23:50:32.381	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-04 23:50:32.447	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 03:26:36.052	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 03:26:36.294	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 03:26:36.294	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 03:26:36.294	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 03:26:36.294	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 03:26:36.360	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 04:34:15.837	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 04:34:15.838	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 04:34:15.838	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 04:34:15.838	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 04:34:15.838	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 04:34:15.951	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 04:39:20.240	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:3645	Detaching blockchain on height 582938
+2021-06-05 04:39:20.241	[RPC0]	WARNING	wallet.wallet2	src/wallet/wallet2.cpp:3715	Detached blockchain on height 582938, transfers detached 0, blocks detached 1
+2021-06-05 08:16:53.315	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 08:16:53.317	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 08:16:53.317	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 08:16:53.317	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 08:16:53.317	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 08:16:53.379	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 08:53:39.161	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 08:53:39.162	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 08:53:39.162	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 08:53:39.162	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 08:53:39.200	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 08:53:39.200	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 08:53:39.200	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 10:02:40.436	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:275	HTTP_CLIENT: Failed to SEND
+2021-06-05 10:02:40.789	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 10:02:40.792	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 10:02:40.792	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 10:02:40.793	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 10:02:40.889	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 10:49:19.274	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 10:49:19.275	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:84	Failed to invoke http request to  /getblocks.bin
+2021-06-05 10:49:19.275	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 10:49:19.275	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = getblocks.bin
+2021-06-05 10:49:19.277	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 14:00:23.585	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 14:00:23.586	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 14:00:23.586	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 14:00:23.586	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 14:00:23.586	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 14:00:23.630	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 14:16:10.599	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 14:16:10.600	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 14:16:10.600	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 14:16:10.600	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 14:16:10.600	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 14:16:10.631	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 14:35:46.933	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 14:35:46.934	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 14:35:46.934	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 14:35:46.934	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 14:35:46.934	[RPC0]	ERROR	wallet.rpc	src/wallet/wallet_rpc_server.cpp:131	Exception at while refreshing, what=no connection to daemon
+2021-06-05 14:35:46.965	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 14:39:13.889	[RPC0]	ERROR	net.http	contrib/epee/include/net/http_client.h:352	Unexpected recv fail
+2021-06-05 14:39:13.890	[RPC0]	INFO	net.http	contrib/epee/include/storages/http_abstract_invoke.h:53	Failed to invoke http request to  /get_transaction_pool_hashes.bin
+2021-06-05 14:39:13.890	[RPC0]	ERROR	wallet.wallet2	src/wallet/wallet2.cpp:13887	!r. THROW EXCEPTION: tools::error::no_connection_to_daemon
+2021-06-05 14:39:13.890	[RPC0]	WARNING	net.http	src/wallet/wallet_errors.h:929	/Users/harrisonhesslink/Equilibria/src/wallet/wallet2.cpp:13887:N5tools5error23no_connection_to_daemonE: no connection to daemon, request = get_transaction_pool_hashes.bin
+2021-06-05 14:39:13.890	[RPC0]	DEBUG	net.http	contrib/epee/include/net/http_client.h:246	Reconnecting...
+2021-06-05 23:08:03.446	[SRV_MAIN]	INFO	net.http	contrib/epee/include/net/http_server_impl_base.h:103	net_service loop stopped.
+2021-06-05 23:08:03.447	[SRV_MAIN]	WARNING	wallet.rpc	src/wallet/wallet_rpc_server.cpp:4613	Stopped wallet RPC server
+2021-06-05 23:08:03.447	[SRV_MAIN]	WARNING	wallet.rpc	src/wallet/wallet_rpc_server.cpp:4616	Saving wallet...
+2021-06-05 23:08:03.447	[SRV_MAIN]	WARNING	wallet.rpc	src/wallet/wallet_rpc_server.cpp:4618	Successfully saved

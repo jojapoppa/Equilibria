@@ -139,10 +139,159 @@ namespace cryptonote
       CHECK_AND_ASSERT_MES(max_outs >= out_amounts.size(), false, "max_out exceeded");
     }
 
-    uint64_t summary_amounts = 0;
-    for (size_t no = 0; no < out_amounts.size(); no++)
+    return 0;
+  }
+  //---------------------------------------------------------------
+  const int SERVICE_NODE_BASE_REWARD_DIVISOR = 2;
+
+  uint64_t service_node_reward_formula(uint64_t base_reward, int hard_fork_version)
+  {
+	  return hard_fork_version >= SERVICE_NODE_VERSION ? (base_reward / SERVICE_NODE_BASE_REWARD_DIVISOR) : 0;
+  }
+
+  uint64_t get_portion_of_reward(uint64_t portions, uint64_t total_service_node_reward)
+  {
+	  uint64_t hi, lo, rewardhi, rewardlo;
+	  lo = mul128(total_service_node_reward, portions, &hi);
+	  div128_64(hi, lo, STAKING_PORTIONS, &rewardhi, &rewardlo);
+	  return rewardlo;
+  }
+
+  static uint64_t calculate_sum_of_portions(const std::vector<std::pair<cryptonote::account_public_address, uint64_t>>& portions, uint64_t total_service_node_reward)
+  {
+    uint64_t reward = 0;
+    for (size_t i = 0; i < portions.size(); i++)
+      reward += get_portion_of_reward(portions[i].second, total_service_node_reward);
+	  return reward;
+  }
+
+
+  miner_tx_context::miner_tx_context(network_type type, crypto::public_key winner, std::vector<std::pair<account_public_address, stake_portions>> winner_info)
+	  : nettype(type)
+	  , snode_winner_key(winner)
+	  , snode_winner_info(winner_info)
+  {
+  }
+
+  //---------------------------------------------------------------
+  bool construct_miner_tx(
+     size_t height,
+     size_t median_size,
+     uint64_t already_generated_coins,
+     size_t current_block_size,
+     uint64_t fee,
+     const account_public_address &miner_address,
+     transaction& tx,
+     const blobdata& extra_nonce,
+     uint8_t hard_fork_version,
+	 const miner_tx_context &miner_context,
+   const size_t node_num)
     {
-      crypto::key_derivation derivation = AUTO_VAL_INIT(derivation);
+	  tx.vin.clear();
+	  tx.vout.clear();
+	  tx.extra.clear();
+	  tx.output_unlock_times.clear();
+	  tx.is_deregister = false;
+    if(hard_fork_version >= SERVICE_NODE_VERSION)
+	    tx.version = 3;
+    if(hard_fork_version == 4)
+      tx.version = 2;
+    if(hard_fork_version <= 3)
+      tx.version = 1;
+
+	  const network_type                                             nettype = miner_context.nettype;
+	  const crypto::public_key                                       &service_node_key = miner_context.snode_winner_key;
+	  const std::vector<std::pair<account_public_address, uint64_t>> &service_node_info =
+		  miner_context.snode_winner_info.empty() ?
+		  service_nodes::null_winner : miner_context.snode_winner_info;
+
+	  keypair txkey = keypair::generate(hw::get_device("default"));
+	  add_tx_pub_key_to_extra(tx, txkey.pub);
+	  if (!extra_nonce.empty())
+		if (!add_extra_nonce_to_tx_extra(tx.extra, extra_nonce))
+			return false;
+	  if (!sort_tx_extra(tx.extra, tx.extra))
+		  return false;
+
+	keypair sn_key = get_deterministic_keypair_from_height(height); // NOTE: Always need since we use same key for service node
+	if (already_generated_coins != 0)
+	{
+		add_tx_pub_key_to_extra(tx, sn_key.pub);
+	}
+
+  add_service_node_winner_to_tx_extra(tx.extra, service_node_key);
+
+
+  txin_gen in;
+  in.height = height;
+
+	miner_reward_context block_reward_context = {};
+	block_reward_context.fee = fee;
+	block_reward_context.height = height;
+	block_reward_context.snode_winner_info = miner_context.snode_winner_info;
+
+	block_reward_parts reward_parts;
+	if(!get_triton_block_reward(median_size, current_block_size, already_generated_coins, hard_fork_version, reward_parts, block_reward_context, nettype))
+  {
+    LOG_PRINT_L0("Failed to calculate block reward");
+    return false;
+  }
+
+	uint64_t summary_amounts = 0;
+	// Miner Reward
+	{
+		crypto::key_derivation derivation = AUTO_VAL_INIT(derivation);
+		crypto::public_key out_eph_public_key = AUTO_VAL_INIT(out_eph_public_key);
+		bool r = crypto::generate_key_derivation(miner_address.m_view_public_key, txkey.sec, derivation);
+		LOG_PRINT_L1("while creating outs:  to generate_key_derivation(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
+
+		CHECK_AND_ASSERT_MES(r, false, "while creating outs: failed to generate_key_derivation(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");
+
+		r = crypto::derive_public_key(derivation, 0, miner_address.m_spend_public_key, out_eph_public_key);
+		LOG_PRINT_L1("while creating outs:  to derive_public_key(" << derivation << ", " << 0 << ", " << miner_address.m_spend_public_key << ")");
+		CHECK_AND_ASSERT_MES(r, false, "while creating outs: failed to derive_public_key(" << derivation << ", " << 0 << ", " << miner_address.m_spend_public_key << ")");
+
+		txout_to_key tk;
+		tk.key = out_eph_public_key;
+
+		tx_out out;
+		summary_amounts += out.amount = reward_parts.miner_reward();
+		out.target = tk;
+		tx.vout.push_back(out);
+		tx.output_unlock_times.push_back(height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
+	}
+
+	if (hard_fork_version >= SERVICE_NODE_VERSION) // Service Node Reward
+	{
+		for (size_t i = 0; i < service_node_info.size(); i++)
+		{
+			crypto::key_derivation derivation = AUTO_VAL_INIT(derivation);
+			crypto::public_key out_eph_public_key = AUTO_VAL_INIT(out_eph_public_key);
+			bool r = crypto::generate_key_derivation(service_node_info[i].first.m_view_public_key, sn_key.sec, derivation);
+			LOG_PRINT_L1("while creating outs: generate_key_derivation(" << service_node_info[i].first.m_view_public_key << ")");
+			CHECK_AND_ASSERT_MES(r, false, "while creating outs: failed to generate_key_derivation(" << service_node_info[i].first.m_view_public_key << ", "<< sn_key.sec << ")");
+			r = crypto::derive_public_key(derivation, 1 + i, service_node_info[i].first.m_spend_public_key, out_eph_public_key);
+			LOG_PRINT_L1("while creating outs:  derive_public_key(" << derivation << ", " << (1 + i) << ", " << service_node_info[i].first.m_spend_public_key << ")");
+			CHECK_AND_ASSERT_MES(r, false, "while creating outs: failed to derive_public_key(" << derivation << ", " << (1 + i) << ", " << service_node_info[i].first.m_spend_public_key << ")");
+
+			txout_to_key tk;
+			tk.key = out_eph_public_key;
+			tx_out out;
+
+      double block_per_period = 720 / node_num;
+
+			summary_amounts += out.amount = hard_fork_version >= 11 ? (get_portion_of_reward(service_node_info[i].second, reward_parts.service_node_total) * block_per_period) : get_portion_of_reward(service_node_info[i].second, reward_parts.service_node_total);
+			out.target = tk;
+			tx.vout.push_back(out);
+			tx.output_unlock_times.push_back(height + CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
+		}
+	}
+
+  if(hard_fork_version >= 7 && reward_parts.governance > 0)
+  {
+      std::string governance_wallet_address_str;
+			cryptonote::address_parse_info governance_wallet_address;
+      cryptonote::get_account_address_from_str(governance_wallet_address, nettype, *cryptonote::get_config(nettype).GOVERNANCE_WALLET_ADDRESS);
       crypto::public_key out_eph_public_key = AUTO_VAL_INIT(out_eph_public_key);
       bool r = crypto::generate_key_derivation(miner_address.m_view_public_key, txkey.sec, derivation);
       CHECK_AND_ASSERT_MES(r, false, "while creating outs: failed to generate_key_derivation(" << miner_address.m_view_public_key << ", " << txkey.sec << ")");

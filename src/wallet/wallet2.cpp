@@ -7911,11 +7911,38 @@ bool wallet2::blackball_output(const std::pair<uint64_t, uint64_t> &output)
   catch (const std::exception &e) { return false; }
 }
 
-bool wallet2::set_blackballed_outputs(const std::vector<std::pair<uint64_t, uint64_t>> &outputs, bool add)
-{
-  if (!m_ringdb)
-    return false;
-  try
+  uint64_t reg_height = 0; 
+  /// check stake parameters (this might adjust the amount)
+  if (!check_stake_allowed(service_node_key, addr_info, amount, reg_height)) {
+    LOG_ERROR("Invalid stake parameters");
+    return {};
+  }
+
+  if(reg_height == 0)
+    return {};
+
+  const cryptonote::account_public_address& address = addr_info.address;
+
+  std::vector<uint8_t> extra;
+  add_service_node_pubkey_to_tx_extra(extra, service_node_key);
+  add_service_node_contributor_to_tx_extra(extra, address);
+
+  vector<cryptonote::tx_destination_entry> dsts;
+  cryptonote::tx_destination_entry de;
+  de.addr = address;
+  de.is_subaddress = false;
+  de.amount = amount;
+  dsts.push_back(de);
+
+  const uint64_t staking_requirement_lock_blocks = service_nodes::get_staking_requirement_lock_blocks(m_nettype);
+
+  const uint64_t locked_blocks = staking_requirement_lock_blocks + STAKING_REQUIREMENT_LOCK_BLOCKS_EXCESS;
+
+  std::string err, err2;
+  const uint64_t bc_height = std::max(get_daemon_blockchain_height(err),
+                                get_daemon_blockchain_target_height(err2));
+
+  if (!err.empty() || !err2.empty())
   {
     bool ret = true;
     if (!add)
@@ -7926,13 +7953,26 @@ bool wallet2::set_blackballed_outputs(const std::vector<std::pair<uint64_t, uint
   catch (const std::exception &e) { return false; }
 }
 
-bool wallet2::unblackball_output(const std::pair<uint64_t, uint64_t> &output)
-{
-  if (!m_ringdb)
-    return false;
-  try { return m_ringdb->unblackball(output); }
-  catch (const std::exception &e) { return false; }
-}
+  const auto v11 = use_fork_rules(11, 10) ? true : false;
+
+  uint64_t unlock_at_block = 0;
+  if (v11)
+    unlock_at_block = reg_height + locked_blocks;
+  else
+    unlock_at_block = bc_height + locked_blocks;
+
+  const uint32_t priority = adjust_priority(0);
+
+  /// Default values
+  const uint32_t m_current_subaddress_account = 0;
+  std::set<uint32_t> subaddr_indices;
+
+  try {
+    auto ptx_vector = create_transactions_2(dsts, 15, unlock_at_block, priority, extra, m_current_subaddress_account, subaddr_indices, true);
+    if (ptx_vector.size() == 1) { return ptx_vector; }
+  } catch (const std::exception& e) {
+    LOG_ERROR("Exception raised on creating tx: " << e.what());
+  }
 
 bool wallet2::is_output_blackballed(const std::pair<uint64_t, uint64_t> &output) const
 {

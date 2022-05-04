@@ -210,8 +210,8 @@ if(NOT MANUAL_SUBMODULES)
   endif()
 endif()
 
-set(CMAKE_C_FLAGS_RELEASE "-w -DNDEBUG ${OPT_FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_RELEASE "-w -DNDEBUG ${OPT_FLAGS_RELEASE}")
+set(CMAKE_C_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${OPT_FLAGS_RELEASE}")
 
 # set this to 0 if per-block checkpoint needs to be disabled
 set(PER_BLOCK_CHECKPOINT 0)
@@ -566,8 +566,8 @@ else()
     message(STATUS "AES support disabled")
   endif()
 
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAG}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARCH_FLAG}")
+  set(CMAKE_C_FLAGS "-w ${CMAKE_C_FLAGS} ${ARCH_FLAG}")
+  set(CMAKE_CXX_FLAGS "-w ${CMAKE_CXX_FLAGS} ${ARCH_FLAG}")
 
   set(WARNINGS "-Wall -Wextra -Wpointer-arith -Wundef -Wvla -Wwrite-strings -Wno-error=extra -Wno-error=deprecated-declarations -Wno-unused-parameter -Wno-error=unused-variable -Wno-error=undef -Wno-error=uninitialized")
   if(CMAKE_C_COMPILER_ID MATCHES "Clang")
